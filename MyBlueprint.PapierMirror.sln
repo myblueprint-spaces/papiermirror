@@ -1,0 +1,36 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32901.215
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyBlueprint.PapierMirror", "MyBlueprint.PapierMirror\MyBlueprint.PapierMirror.csproj", "{6FA5D878-5ED8-426E-84CE-533E0056CB94}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MyBlueprint.PapierMirror.Test", "MyBlueprint.PapierMirror.Test\MyBlueprint.PapierMirror.Test.csproj", "{313DCD34-35F2-4ACE-A520-2A9B4E36E11F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7C2435DE-A734-4007-9600-9C7A3C475D77}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6FA5D878-5ED8-426E-84CE-533E0056CB94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6FA5D878-5ED8-426E-84CE-533E0056CB94}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6FA5D878-5ED8-426E-84CE-533E0056CB94}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6FA5D878-5ED8-426E-84CE-533E0056CB94}.Release|Any CPU.Build.0 = Release|Any CPU
+		{313DCD34-35F2-4ACE-A520-2A9B4E36E11F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{313DCD34-35F2-4ACE-A520-2A9B4E36E11F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{313DCD34-35F2-4ACE-A520-2A9B4E36E11F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{313DCD34-35F2-4ACE-A520-2A9B4E36E11F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C817A2E0-B1D1-41AE-B683-84DE202D75AE}
+	EndGlobalSection
+EndGlobal
