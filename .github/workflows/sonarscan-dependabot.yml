@@ -1,0 +1,84 @@
+name: .NET Build
+
+on:
+  pull_request_target:
+    branches: [ main ]
+
+env:
+  SONAR_PROJECTKEY: 'myblueprint-spaces_papiermirror'
+  SONAR_ORGANIZATION: 'myblueprint'
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    if: ${{ github.actor == 'dependabot[bot]'}}
+    timeout-minutes: 20
+    concurrency: 
+      group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.base_ref || github.ref }}
+      cancel-in-progress: true
+
+    services:
+      redis:
+        image: redis
+        # Set health checks to wait until redis has started
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+        ref: ${{ github.event.pull_request.head.sha }}
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+    - uses: actions/cache@v3
+      name: Cache dotnet
+      with:
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-nuget-
+    - name: Cache SonarCloud packages
+      uses: actions/cache@v3
+      with:
+        path: ~/sonar/cache
+        key: ${{ runner.os }}-sonar
+        restore-keys: ${{ runner.os }}-sonar
+    - name: Cache SonarCloud scanner
+      id: cache-sonar-scanner
+      uses: actions/cache@v3
+      with:
+        path: ./.sonar/scanner
+        key: ${{ runner.os }}-sonar-scanner
+        restore-keys: ${{ runner.os }}-sonar-scanner
+    - uses: actions/setup-java@v2 # Needed to run SonarQube scanner
+      with:
+        distribution: 'microsoft'
+        java-version: '17'
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.x
+    - name: Install SonarCloud scanner
+      if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
+      run: |
+        mkdir ~/.sonar
+        mkdir ~/.sonar/scanner
+        dotnet tool update dotnet-sonarscanner --tool-path ~/.sonar/scanner
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Build and scan
+      run: |
+        dotnet tool install JetBrains.dotCover.GlobalTool --global 
+        ~/.sonar/scanner/dotnet-sonarscanner begin /k:"${{ env.SONAR_PROJECTKEY }}" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /o:"${{ env.SONAR_ORGANIZATION }}" /d:sonar.pullrequest.key="${{ github.event.number }}" /d:sonar.pullrequest.branch="${{ github.event.pull_request.head.ref }}" /d:sonar.pullrequest.base="${{ github.event.pull_request.base.ref }}" /d:sonar.pullrequest.github.repository="${{ github.event.repository.name }}" /d:sonar.pullrequest.provider="github" /d:sonar.cs.dotcover.reportsPaths=dotCover.Output.html
+        dotnet build --no-restore
+        dotnet dotcover test --dcReportType=HTML --no-build
+        ~/.sonar/scanner/dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        DOTNET_ROLL_FORWARD: Major
