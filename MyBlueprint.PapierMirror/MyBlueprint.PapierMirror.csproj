@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <RepositoryUrl>https://github.com/myblueprint-spaces/papiermirror</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>
