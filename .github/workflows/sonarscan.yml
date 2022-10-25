@@ -1,0 +1,96 @@
+name: SonarCloud Scan
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+env:
+  SONAR_PROJECTKEY: 'myblueprint-spaces_papiermirror'
+  SONAR_ORGANIZATION: 'myblueprint'
+
+jobs:
+  scan:
+    name: SonarCloud Scan
+    runs-on: ubuntu-latest
+    if: ${{ github.actor != 'dependabot[bot]'}}
+    timeout-minutes: 20
+    concurrency: 
+      group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.base_ref || github.ref }}
+      cancel-in-progress: true
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: actions/cache@v3
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+      - uses: actions/setup-java@v3 # Needed to run SonarQube scanner
+        with:
+          distribution: 'microsoft'
+          java-version: '17'
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 6.0.x
+      - name: Cache SonarCloud packages
+        uses: actions/cache@v3
+        with:
+          path: ~/sonar/cache
+          key: ${{ runner.os }}-sonar
+          restore-keys: ${{ runner.os }}-sonar
+      - name: Cache SonarCloud scanner
+        id: cache-sonar-scanner
+        uses: actions/cache@v3
+        with:
+          path: ./.sonar/scanner
+          key: ${{ runner.os }}-sonar-scanner
+          restore-keys: ${{ runner.os }}-sonar-scanner
+      - name: Install SonarCloud scanner
+        if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
+        run: |
+          mkdir ~/.sonar
+          mkdir ~/.sonar/scanner
+          dotnet tool update dotnet-sonarscanner --tool-path ~/.sonar/scanner
+      - name: Cache dotCover
+        id: cache-dotcover
+        uses: actions/cache@v3
+        with:
+          path: ./.jetbrains/dotcover
+          key: ${{ runner.os }}-jetbrains-dotcover
+          restore-keys: ${{ runner.os }}-jetbrains-dotcover
+      - name: Install dotCover
+        if: steps.cache-dotcover.outputs.cache-hit != 'true'
+        run: |
+          mkdir ~/.jetbrains
+          mkdir ~/.jetbrains/dotcover
+          dotnet tool update JetBrains.dotCover.GlobalTool --tool-path ~/.jetbrains/dotcover
+      - name: Restore dependencies
+        run: dotnet restore
+        env: 
+          NODE_AUTH_TOKEN: ${{secrets.NODE_AUTH_TOKEN}}
+      - name: Build and scan
+        if: ${{ github.event_name != 'pull_request' }}
+        run: |
+          ~/.sonar/scanner/dotnet-sonarscanner begin /k:"${{ env.SONAR_PROJECTKEY }}" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /o:"${{ env.SONAR_ORGANIZATION }}" /d:sonar.cs.dotcover.reportsPaths=dotCover.Output.html
+          dotnet build --no-restore
+          ~/.jetbrains/dotcover/dotnet-dotcover test --dcReportType=HTML --no-build
+          ~/.sonar/scanner/dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DOTNET_ROLL_FORWARD: Major
+      - name: Build and scan for PR
+        if: ${{ github.event_name == 'pull_request' }}
+        run: |
+          ~/.sonar/scanner/dotnet-sonarscanner begin /k:"${{ env.SONAR_PROJECTKEY }}" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /o:"${{ env.SONAR_ORGANIZATION }}" /d:sonar.pullrequest.key="${{ github.event.number }}" /d:sonar.pullrequest.branch="${{ github.event.pull_request.head.ref }}" /d:sonar.pullrequest.base="${{ github.event.pull_request.base.ref }}" /d:sonar.pullrequest.github.repository="${{ github.event.repository.name }}" /d:sonar.pullrequest.provider="github" /d:sonar.cs.dotcover.reportsPaths=dotCover.Output.html
+          dotnet build --no-restore
+          ~/.jetbrains/dotcover/dotnet-dotcover test --dcReportType=HTML --no-build
+          ~/.sonar/scanner/dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          DOTNET_ROLL_FORWARD: Major

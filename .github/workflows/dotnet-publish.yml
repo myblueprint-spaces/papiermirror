@@ -1,0 +1,29 @@
+name: Publish to Packages
+
+on:
+  release:
+    types:
+      - released
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: 6.0.x
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build -c Release --no-restore /p:Version=${{ github.event.release.tag_name }}
+    - name: Pack
+      run: dotnet pack -c Release /p:Version=${{ github.event.release.tag_name }}
+    - name: Push
+      run: |
+        dotnet nuget push MyBlueprint.PapierMirror/bin/Release/MyBlueprint.PapierMirror.${{ github.event.release.tag_name }}.nupkg -k $NUGET_AUTH_TOKEN
