@@ -30,12 +30,12 @@ public abstract class Mark
     /// <summary>
     /// An array of supported HTML tags for this mark.
     /// </summary>
-    internal abstract string[] Tags { get; }
+    protected abstract string[] Tags { get; }
 
     /// <summary>
     /// The <see cref="System.Type"/> of the attribute.
     /// </summary>
-    internal virtual Type AttributeType { get; } = typeof(MarkAttributes);
+    protected virtual Type AttributeType { get; } = typeof(MarkAttributes);
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Mark" /> class.

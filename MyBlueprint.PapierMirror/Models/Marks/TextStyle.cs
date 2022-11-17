@@ -48,10 +48,10 @@ public class TextStyle : Mark
     }
 
     /// <inheritdoc/>
-    internal override string[] Tags => new[] { "span" };
+    protected override string[] Tags => new[] { "span" };
 
     /// <inheritdoc/>
-    internal override Type AttributeType => typeof(TextStyleAttributes);
+    protected override Type AttributeType => typeof(TextStyleAttributes);
 
     private const string Color = "color:", FontSize = "font-size:", Background = "background:";
 

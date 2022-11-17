@@ -21,7 +21,7 @@ public class Strong : Mark
         : this() { }
 
     /// <inheritdoc/>
-    internal override string[] Tags => new[] { "strong" };
+    protected override string[] Tags => new[] { "strong" };
 
     /// <inheritdoc />
     public override INode GetHtmlNode(IDocument document)

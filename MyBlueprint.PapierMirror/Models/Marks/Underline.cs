@@ -21,7 +21,7 @@ public class Underline : Mark
         : this() { }
 
     /// <inheritdoc/>
-    internal override string[] Tags => new[] { "u" };
+    protected override string[] Tags => new[] { "u" };
 
     /// <inheritdoc />
     public override INode GetHtmlNode(IDocument document)

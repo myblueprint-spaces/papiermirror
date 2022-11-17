@@ -21,7 +21,7 @@ public class Subscript : Mark
         : this() { }
 
     /// <inheritdoc/>
-    internal override string[] Tags => new[] { "sub" };
+    protected override string[] Tags => new[] { "sub" };
 
     /// <inheritdoc />
     public override INode GetHtmlNode(IDocument document)
