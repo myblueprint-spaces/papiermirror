@@ -2,6 +2,7 @@
 using System;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 
 namespace MyBlueprint.PapierMirror.Models.Marks;
 
@@ -48,10 +49,10 @@ public class TextStyle : Mark
     }
 
     /// <inheritdoc/>
-    public override string[] Tags => new[] { "span" };
+    protected internal override string[] Tags => new[] { "span" };
 
     /// <inheritdoc/>
-    public override Type AttributeType => typeof(TextStyleAttributes);
+    protected internal override Type AttributeType => typeof(TextStyleAttributes);
 
     private const string Color = "color:", FontSize = "font-size:", Background = "background:";
 

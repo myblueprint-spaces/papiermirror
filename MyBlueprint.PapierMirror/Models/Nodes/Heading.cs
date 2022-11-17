@@ -48,10 +48,10 @@ public class Heading : Node
     }
 
     /// <inheritdoc/>
-    public override string[] Tags => new[] { "h1", "h2", "h3", "h4", "h5", "h6" };
+    protected internal override string[] Tags => new[] { "h1", "h2", "h3", "h4", "h5", "h6" };
 
     /// <inheritdoc/>
-    public override Type AttributeType => typeof(HeadingAttributes);
+    protected internal override Type AttributeType => typeof(HeadingAttributes);
 
     /// <summary>
     /// Parse the header level from the tag.

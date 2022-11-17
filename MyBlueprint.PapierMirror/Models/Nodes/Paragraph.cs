@@ -39,10 +39,11 @@ public class Paragraph : Node
     }
 
     /// <inheritdoc/>
-    public override string[] Tags => new[] { "p" };
+    [JsonIgnore]
+    protected internal override string[] Tags => new[] { "p" };
 
     /// <inheritdoc/>
-    public override Type AttributeType => typeof(ParagraphAttributes);
+    protected internal override Type AttributeType => typeof(ParagraphAttributes);
 
     private static ParagraphAttributes GetAttrs(IElement node)
     {

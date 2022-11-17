@@ -21,7 +21,7 @@ public class Code : Mark
         : this() { }
 
     /// <inheritdoc/>
-    public override string[] Tags => new[] { "code" };
+    protected internal override string[] Tags => new[] { "code" };
 
     /// <inheritdoc />
     public override INode GetHtmlNode(IDocument document)

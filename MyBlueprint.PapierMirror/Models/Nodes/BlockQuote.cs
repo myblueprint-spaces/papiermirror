@@ -14,7 +14,7 @@ public class BlockQuote : Node
         : base("blockquote") { }
 
     /// <inheritdoc/>
-    public override string[] Tags => new[] { "blockquote" };
+    protected internal override string[] Tags => new[] { "blockquote" };
 
     /// <inheritdoc />
     public override INode GetHtmlNode(IDocument document)

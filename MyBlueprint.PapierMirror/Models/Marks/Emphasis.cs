@@ -21,7 +21,7 @@ public class Emphasis : Mark
         : this() { }
 
     /// <inheritdoc/>
-    public override string[] Tags => new[] { "em" };
+    protected internal override string[] Tags => new[] { "em" };
 
     /// <inheritdoc />
     public override INode GetHtmlNode(IDocument document)

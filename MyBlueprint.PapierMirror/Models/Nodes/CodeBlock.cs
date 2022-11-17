@@ -14,7 +14,7 @@ public class CodeBlock : Node
         : base("codeBlock") { }
 
     /// <inheritdoc/>
-    public override string[] Tags => new[] { "pre" };
+    protected internal override string[] Tags => new[] { "pre" };
 
     /// <inheritdoc />
     public override INode GetHtmlNode(IDocument document)
