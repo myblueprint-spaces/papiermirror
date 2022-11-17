@@ -54,10 +54,10 @@ public class Link : Mark
     }
 
     /// <inheritdoc/>
-    protected override string[] Tags => new[] { "a" };
+    public override string[] Tags => new[] { "a" };
 
     /// <inheritdoc/>
-    protected override Type AttributeType => typeof(LinkAttributes);
+    public override Type AttributeType => typeof(LinkAttributes);
 
     /// <inheritdoc />
     public override INode GetHtmlNode(IDocument document)

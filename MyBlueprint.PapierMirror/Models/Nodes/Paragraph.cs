@@ -39,10 +39,10 @@ public class Paragraph : Node
     }
 
     /// <inheritdoc/>
-    internal override string[] Tags => new[] { "p" };
+    public override string[] Tags => new[] { "p" };
 
     /// <inheritdoc/>
-    internal override Type AttributeType => typeof(ParagraphAttributes);
+    public override Type AttributeType => typeof(ParagraphAttributes);
 
     private static ParagraphAttributes GetAttrs(IElement node)
     {

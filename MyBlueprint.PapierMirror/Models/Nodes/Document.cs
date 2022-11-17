@@ -14,7 +14,7 @@ public class Document : Node
         : base("doc") { }
 
     /// <inheritdoc/>
-    internal override string[] Tags => new[] { "html", "body" };
+    public override string[] Tags => new[] { "html", "body" };
 
     /// <inheritdoc />
     public override INode GetHtmlNode(IDocument document)

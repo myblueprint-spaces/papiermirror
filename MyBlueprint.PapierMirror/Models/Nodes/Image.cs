@@ -67,10 +67,10 @@ public class Image : Node
     }
 
     /// <inheritdoc/>
-    internal override string[] Tags => new[] { "img" };
+    public override string[] Tags => new[] { "img" };
 
     /// <inheritdoc/>
-    internal override Type AttributeType => typeof(ImageAttributes);
+    public override Type AttributeType => typeof(ImageAttributes);
 
     /// <inheritdoc />
     public override INode GetHtmlNode(IDocument document)

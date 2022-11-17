@@ -21,7 +21,7 @@ public class Superscript : Mark
         : this() { }
 
     /// <inheritdoc/>
-    protected override string[] Tags => new[] { "sup" };
+    public override string[] Tags => new[] { "sup" };
 
     /// <inheritdoc />
     public override INode GetHtmlNode(IDocument document)

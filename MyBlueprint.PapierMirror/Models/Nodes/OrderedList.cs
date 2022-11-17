@@ -28,7 +28,7 @@ public class OrderedList : Node
     }
 
     /// <inheritdoc/>
-    internal override string[] Tags => new[] { "ol" };
+    public override string[] Tags => new[] { "ol" };
 
     internal const int DefaultStart = 1;
 

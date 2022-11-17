@@ -25,7 +25,7 @@ public class TextNode : Node
     }
 
     /// <inheritdoc/>
-    internal override string[] Tags => new[] { "#text" };
+    public override string[] Tags => new[] { "#text" };
 
     /// <summary>
     /// The node's text content.

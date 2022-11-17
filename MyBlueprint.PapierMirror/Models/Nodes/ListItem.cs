@@ -16,7 +16,7 @@ public class ListItem : Node
     }
 
     /// <inheritdoc/>
-    internal override string[] Tags => new[] { "li" };
+    public override string[] Tags => new[] { "li" };
 
     /// <inheritdoc />
     public override INode GetHtmlNode(IDocument document)

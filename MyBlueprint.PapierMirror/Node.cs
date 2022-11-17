@@ -43,12 +43,12 @@ public abstract class Node
     /// <summary>
     /// An array of supported HTML tags for this node.
     /// </summary>
-    internal abstract string[] Tags { get; }
+    public abstract string[] Tags { get; }
 
     /// <summary>
     /// The <see cref="System.Type"/> of the attribute.
     /// </summary>
-    internal virtual Type AttributeType { get; } = typeof(NodeAttributes);
+    public virtual Type AttributeType { get; } = typeof(NodeAttributes);
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Node" /> class.
