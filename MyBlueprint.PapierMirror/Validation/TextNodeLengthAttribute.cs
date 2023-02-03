@@ -1,4 +1,5 @@
 ﻿using MyBlueprint.PapierMirror.Models.Nodes;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace MyBlueprint.PapierMirror.Validation
@@ -9,14 +10,28 @@ namespace MyBlueprint.PapierMirror.Validation
     public sealed class TextNodeLengthAttribute : ValidationAttribute
     {
         private int Length { get; }
+        private Type TextNodeType { get; }
+        private Func<Node, int> LengthFunc { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TextNodeLengthAttribute"/> class.
         /// </summary>
         /// <param name="length"></param>
-        public TextNodeLengthAttribute(int length)
+        public TextNodeLengthAttribute(int length) : this(length, typeof(TextNode), n => ((TextNode)n).Text?.Length ?? 0)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TextNodeLengthAttribute"/> class.
+        /// </summary>
+        /// <param name="length"></param>
+        /// <param name="textNodeType"></param>
+        /// <param name="textLengthFunc"></param>
+        public TextNodeLengthAttribute(int length, Type textNodeType, Func<Node, int> textLengthFunc)
         {
             Length = length;
+            TextNodeType = textNodeType;
+            LengthFunc = textLengthFunc;
         }
 
         /// <inheritdoc />
@@ -28,7 +43,7 @@ namespace MyBlueprint.PapierMirror.Validation
                 count += SumTextLength(node);
             }
 
-            return count < Length;
+            return count <= Length;
         }
 
         /// <summary>
@@ -36,7 +51,7 @@ namespace MyBlueprint.PapierMirror.Validation
         /// </summary>
         /// <param name="node"></param>
         /// <returns></returns>
-        public static int SumTextLength(Node node)
+        public int SumTextLength(Node node)
         {
             var count = 0;
             if (node.Content == null)
@@ -51,9 +66,10 @@ namespace MyBlueprint.PapierMirror.Validation
                     count += SumTextLength(child);
                 }
 
-                if (child is TextNode { Text: { } } textNode)
+                if (child.GetType() == TextNodeType)
                 {
-                    count += textNode.Text.Length;
+                    var length = LengthFunc(child);
+                    count += length;
                 }
             }
 

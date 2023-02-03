@@ -12,10 +12,10 @@ internal class TextNodeLengthAttributeTests
     {
         var document = new Document { Content = new List<Node> { new TextNode { Text = "1234" } } };
 
-        var textLength = TextNodeLengthAttribute.SumTextLength(document);
+        var attribute = new TextNodeLengthAttribute(5);
+        var textLength = attribute.SumTextLength(document);
         Assert.That(textLength, Is.EqualTo(4));
 
-        var attribute = new TextNodeLengthAttribute(5);
         var result = attribute.IsValid(document);
 
         Assert.That(result, Is.True);
@@ -29,10 +29,10 @@ internal class TextNodeLengthAttributeTests
             Content = new List<Node> { new Paragraph { Content = new List<Node> { new TextNode { Text = "1234567890" } } } }
         };
 
-        var textLength = TextNodeLengthAttribute.SumTextLength(document);
+        var attribute = new TextNodeLengthAttribute(10);
+        var textLength = attribute.SumTextLength(document);
         Assert.That(textLength, Is.EqualTo(10));
 
-        var attribute = new TextNodeLengthAttribute(10);
         var result = attribute.IsValid(document);
 
         Assert.That(result, Is.True);
