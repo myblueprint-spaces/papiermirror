@@ -1,5 +1,7 @@
 ﻿using AngleSharp.Dom;
+using MyBlueprint.PapierMirror.Json;
 using System.Net;
+using System.Text.Json.Serialization;
 
 namespace MyBlueprint.PapierMirror.Models.Nodes;
 
@@ -30,6 +32,7 @@ public class TextNode : Node
     /// <summary>
     /// The node's text content.
     /// </summary>
+    [JsonConverter(typeof(DefaultStringConverter))]
     public string? Text { get; set; }
 
     /// <inheritdoc />
