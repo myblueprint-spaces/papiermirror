@@ -12,6 +12,7 @@ namespace MyBlueprint.PapierMirror.Validation
     {
         private int Depth { get; }
         private Type[] ListTypes { get; }
+        private int MaxNodeDepth { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MaximumListDepthAttribute"/> class.
@@ -53,12 +54,27 @@ namespace MyBlueprint.PapierMirror.Validation
             {
                 if (Array.IndexOf(ListTypes, child.GetType()) >= 0)
                 {
+                    if (node.GetType() == typeof(Document))
+                    {
+                        if (subDepth > MaxNodeDepth)
+                        {
+                            MaxNodeDepth = subDepth;
+                        }
+
+                        subDepth = 0;
+                    }
+
                     subDepth += MaxDepth(child) + 1;
                 }
                 else
                 {
                     subDepth += MaxDepth(child);
                 }
+            }
+
+            if (node.GetType() == typeof(Document))
+            {
+                return MaxNodeDepth;
             }
 
             return subDepth;
