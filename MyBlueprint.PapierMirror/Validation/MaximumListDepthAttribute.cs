@@ -54,6 +54,8 @@ namespace MyBlueprint.PapierMirror.Validation
             {
                 if (Array.IndexOf(ListTypes, child.GetType()) >= 0)
                 {
+                    subDepth += MaxDepth(child) + 1;
+
                     if (node.GetType() == typeof(Document))
                     {
                         if (subDepth > MaxNodeDepth)
@@ -63,8 +65,6 @@ namespace MyBlueprint.PapierMirror.Validation
 
                         subDepth = 0;
                     }
-
-                    subDepth += MaxDepth(child) + 1;
                 }
                 else
                 {

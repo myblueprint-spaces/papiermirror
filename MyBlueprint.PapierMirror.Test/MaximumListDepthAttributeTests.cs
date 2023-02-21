@@ -30,7 +30,7 @@ internal class MaximumListDepthAttributeTests
         var attribute = new MaximumListDepthAttribute(maxDepth);
 
         var depth = attribute.MaxDepth(document);
-        Assert.IsTrue(depth < maxDepth);
+        Assert.IsTrue(depth <= maxDepth);
 
         var result = attribute.IsValid(document);
 
@@ -40,7 +40,7 @@ internal class MaximumListDepthAttributeTests
     [Test]
     public void TestsInvalidListDepth()
     {
-        var maxDepth = 5;
+        var maxDepth = 4;
         var document = GetDocument(maxDepth + 1);
 
         var attribute = new MaximumListDepthAttribute(maxDepth);
