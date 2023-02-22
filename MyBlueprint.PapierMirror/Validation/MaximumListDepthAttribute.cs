@@ -12,7 +12,6 @@ namespace MyBlueprint.PapierMirror.Validation
     {
         private int Depth { get; }
         private Type[] ListTypes { get; }
-        private int MaxNodeDepth { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MaximumListDepthAttribute"/> class.
