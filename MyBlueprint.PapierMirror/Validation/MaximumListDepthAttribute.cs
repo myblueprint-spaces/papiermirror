@@ -53,11 +53,11 @@ namespace MyBlueprint.PapierMirror.Validation
             {
                 if (Array.IndexOf(ListTypes, child.GetType()) >= 0)
                 {
-                    subDepth += MaxDepth(child) + 1;
+                    subDepth = Math.Max(subDepth, MaxDepth(child) + 1);
                 }
                 else
                 {
-                    subDepth += MaxDepth(child);
+                    subDepth = Math.Max(subDepth, MaxDepth(child));
                 }
             }
 
