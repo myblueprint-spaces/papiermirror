@@ -41,7 +41,7 @@ namespace MyBlueprint.PapierMirror.Validation
                 case Node node:
                     var maxDepth = MaxDepth(node);
 
-                    return maxDepth <= Depth ? ValidationResult.Success : new ValidationResult("List cannot exceed maximum depth of {Depth}. Received max depth: {maxDepth}");
+                    return maxDepth <= Depth ? ValidationResult.Success : new ValidationResult($"List cannot exceed maximum depth of {Depth}. Received max depth: {maxDepth}");
                 default:
                     return new ValidationResult("Unexpected object");
             }
