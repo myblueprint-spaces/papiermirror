@@ -33,7 +33,7 @@ namespace MyBlueprint.PapierMirror.Validation
                 return ValidationResult.Success;
             }
 
-            return new ValidationResult($"Invalid root node. Expected {RootType.Name}, got {type.Name}"); 
+            return new ValidationResult($"Invalid root node. Expected {RootType.Name}, got {type.Name}");
         }
     }
 }
