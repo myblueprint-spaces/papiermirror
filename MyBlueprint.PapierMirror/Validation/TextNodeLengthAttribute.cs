@@ -35,7 +35,7 @@ namespace MyBlueprint.PapierMirror.Validation
         }
 
         /// <inheritdoc />
-        public override bool IsValid(object? value)
+        protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
         {
             var count = 0;
             if (value is Node { Content: { } } node)
@@ -43,7 +43,7 @@ namespace MyBlueprint.PapierMirror.Validation
                 count += SumTextLength(node);
             }
 
-            return count <= Length;
+            return count <= Length ? ValidationResult.Success : new ValidationResult($"Maximum character length of {Length} exceeded. Total: {count}.");
         }
 
         /// <summary>

@@ -1,14 +1,36 @@
 ﻿using MyBlueprint.PapierMirror.Models.Nodes;
 using MyBlueprint.PapierMirror.Validation;
 using NUnit.Framework;
+using System.ComponentModel.DataAnnotations;
 
 namespace MyBlueprint.PapierMirror.Test;
 [TestFixture]
 internal class MaximumListDepthAttributeTests
 {
+    private const int MaxDepth = 5;
+    private class ValidationTarget
+    {
+        public ValidationTarget(Node? document)
+        {
+            Document = document;
+        }
+
+        [MaximumListDepth(MaxDepth)]
+        public Node? Document { get; }
+    }
+
+    private static bool ValidateNode(Node? node)
+    {
+        var target = new ValidationTarget(node);
+        var context = new ValidationContext(target);
+        var results = new List<ValidationResult>();
+
+        return Validator.TryValidateObject(target, context, results, true);
+    }
+
     private static Node GetDocument(int depth)
     {
-        var document = new Document { Content = new List<Node> { GetList(depth) }};
+        var document = new Document { Content = new List<Node> { GetList(depth) } };
         return document;
     }
 
@@ -30,30 +52,70 @@ internal class MaximumListDepthAttributeTests
     [Test]
     public void TestsValidListDepth()
     {
-        var maxDepth = 4;
-        var document = GetDocument(maxDepth);
+        var document = GetDocument(MaxDepth);
 
-        var attribute = new MaximumListDepthAttribute(maxDepth);
+        var attribute = new MaximumListDepthAttribute(MaxDepth);
 
         var depth = attribute.MaxDepth(document);
-        Assert.AreEqual(maxDepth, depth);
-
-        var result = attribute.IsValid(document);
-
+        Assert.AreEqual(MaxDepth, depth);
+        
+        var result = ValidateNode(document);
         Assert.IsTrue(result);
     }
 
     [Test]
     public void TestsInvalidListDepth()
     {
-        var maxDepth = 4;
-        var document = GetDocument(maxDepth + 1);
-        var attribute = new MaximumListDepthAttribute(maxDepth);
+        var document = GetDocument(MaxDepth + 1);
+
+        var attribute = new MaximumListDepthAttribute(MaxDepth);
 
         var depth = attribute.MaxDepth(document);
-        Assert.AreEqual(maxDepth + 1, depth);
+        Assert.AreEqual(MaxDepth + 1, depth);
 
-        var result = attribute.IsValid(document);
+        var result = ValidateNode(document);
+        Assert.IsFalse(result);
+    }
+
+    [Test]
+    public void TestValidSiblingLists()
+    {
+        var document = new Document
+        {
+            Content = new List<Node>
+        {
+            GetList(MaxDepth),
+            GetList(1)
+        }
+        };
+
+        var attribute = new MaximumListDepthAttribute(MaxDepth);
+        var depth = attribute.MaxDepth(document);
+
+        Assert.AreEqual(MaxDepth, depth);
+
+        var result = ValidateNode(document);
+        Assert.IsTrue(result);
+    }
+
+    [Test]
+    public void TestInvalidSiblingLists()
+    {
+        var document = new Document
+        {
+            Content = new List<Node>
+            {
+                GetList(MaxDepth),
+                GetList(MaxDepth * 2)
+            }
+        };
+
+        var attribute = new MaximumListDepthAttribute(MaxDepth);
+        var depth = attribute.MaxDepth(document);
+
+        Assert.AreEqual(MaxDepth * 2, depth);
+
+        var result = ValidateNode(document);
         Assert.IsFalse(result);
     }
 

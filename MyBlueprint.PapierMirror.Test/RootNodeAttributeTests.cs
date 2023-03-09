@@ -8,15 +8,32 @@ namespace MyBlueprint.PapierMirror.Test;
 [TestFixture]
 internal class RootNodeAttributeTests
 {
+    private class ValidationTarget
+    {
+        public ValidationTarget(Node? document)
+        {
+            Document = document;
+        }
+
+        [RootNode(typeof(Document))]
+        public Node? Document { get; }
+    }
+
+    private static bool ValidateNode(Node? node)
+    {
+        var target = new ValidationTarget(node);
+        var context = new ValidationContext(target);
+        var results = new List<ValidationResult>();
+
+        return Validator.TryValidateObject(target, context, results, true);
+    }
+
     [Test]
     public void ValidatesCorrectRootNode()
     {
         var document = new Document();
 
-        var attribute = new RootNodeAttribute(typeof(Document));
-
-        var result = attribute.IsValid(document);
-
+        var result = ValidateNode(document);
         Assert.That(result, Is.True);
     }
 
@@ -28,10 +45,7 @@ internal class RootNodeAttributeTests
     {
         Node? document = null;
 
-        var attribute = new RootNodeAttribute(typeof(Document));
-
-        var result = attribute.IsValid(document);
-
+        var result = ValidateNode(document);
         Assert.That(result, Is.True);
     }
 
@@ -40,10 +54,7 @@ internal class RootNodeAttributeTests
     {
         Node textNode = new TextNode { Text = "Test"};
 
-        var attribute = new RootNodeAttribute(typeof(Document));
-
-        var result = attribute.IsValid(textNode);
-
+        var result = ValidateNode(textNode);
         Assert.That(result, Is.False);
     }
 }

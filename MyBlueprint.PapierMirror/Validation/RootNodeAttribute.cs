@@ -20,14 +20,20 @@ namespace MyBlueprint.PapierMirror.Validation
         }
 
         /// <inheritdoc />
-        public override bool IsValid(object? value)
+        protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
         {
-            if (value == null || value.GetType() == RootType)
+            if (value == null)
             {
-                return true;
+                return ValidationResult.Success;
             }
 
-            return false;
+            var type = value.GetType();
+            if (type == RootType)
+            {
+                return ValidationResult.Success;
+            }
+
+            return new ValidationResult($"Invalid root node. Expected {RootType.Name}, got {type.Name}"); 
         }
     }
 }
