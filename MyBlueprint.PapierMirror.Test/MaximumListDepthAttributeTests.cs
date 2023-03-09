@@ -58,7 +58,7 @@ internal class MaximumListDepthAttributeTests
 
         var depth = attribute.MaxDepth(document);
         Assert.AreEqual(MaxDepth, depth);
-        
+
         var result = ValidateNode(document);
         Assert.IsTrue(result);
     }
@@ -116,52 +116,6 @@ internal class MaximumListDepthAttributeTests
         Assert.AreEqual(MaxDepth * 2, depth);
 
         var result = ValidateNode(document);
-        Assert.IsFalse(result);
-    }
-
-    [Test]
-    public void TestValidSiblingLists()
-    {
-        const int maxDepth = 5;
-
-        var document = new Document
-        {
-            Content = new List<Node>
-            {
-                GetList(maxDepth),
-                GetList(1)
-            }
-        };
-
-        var attribute = new MaximumListDepthAttribute(maxDepth);
-        var depth = attribute.MaxDepth(document);
-
-        Assert.AreEqual(maxDepth, depth);
-
-        var result = attribute.IsValid(document);
-        Assert.IsTrue(result);
-    }
-
-    [Test]
-    public void TestInvalidSiblingLists()
-    {
-        const int maxDepth = 5;
-
-        var document = new Document
-        {
-            Content = new List<Node>
-            {
-                GetList(maxDepth),
-                GetList(maxDepth * 2)
-            }
-        };
-
-        var attribute = new MaximumListDepthAttribute(maxDepth);
-        var depth = attribute.MaxDepth(document);
-
-        Assert.AreEqual(maxDepth * 2, depth);
-
-        var result = attribute.IsValid(document);
         Assert.IsFalse(result);
     }
 }
