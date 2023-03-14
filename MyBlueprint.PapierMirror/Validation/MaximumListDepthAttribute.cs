@@ -8,6 +8,7 @@ namespace MyBlueprint.PapierMirror.Validation
     /// <summary>
     /// Specifies the maximum allowable list depth for the node.
     /// </summary>
+    [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
     public sealed class MaximumListDepthAttribute : ValidationAttribute
     {
         private int Depth { get; }
@@ -31,14 +32,19 @@ namespace MyBlueprint.PapierMirror.Validation
         }
 
         /// <inheritdoc />
-        public override bool IsValid(object? value)
+        protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
         {
-            return value switch
+            switch (value)
             {
-                null => true,
-                Node node => MaxDepth(node) <= Depth,
-                _ => false
-            };
+                case null:
+                    return ValidationResult.Success;
+                case Node node:
+                    var maxDepth = MaxDepth(node);
+
+                    return maxDepth <= Depth ? ValidationResult.Success : new ValidationResult($"List cannot exceed maximum depth of {Depth}. Received max depth: {maxDepth}");
+                default:
+                    return new ValidationResult("Unexpected object");
+            }
         }
 
         /// <summary>
