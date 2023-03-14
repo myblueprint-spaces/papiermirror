@@ -62,12 +62,12 @@ internal class TextNodeLengthAttributeTests
     {
         var document = new Document
         {
-            Content = new Node[] { new Paragraph { Content = new Node[] { new TextNode { Text = "123" }, new TextNode { Text = "45" } } }, new Paragraph { Content = new Node[] { new TextNode { Text = "789" } } } }
+            Content = new Node[] { new Paragraph { Content = new Node[] { new TextNode { Text = "123" }, new TextNode { Text = "45" } } }, new Paragraph { Content = new Node[] { new TextNode { Text = "678" } } } }
         };
 
         var attribute = new TextNodeLengthAttribute(5);
         var textLength = attribute.SumTextLength(document);
-        Assert.That(textLength, Is.EqualTo(9));
+        Assert.That(textLength, Is.EqualTo(8));
 
         var result = ValidateNode(document);
         Assert.That(result, Is.False);
