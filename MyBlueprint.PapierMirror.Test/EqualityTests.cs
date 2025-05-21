@@ -1,4 +1,5 @@
-﻿using MyBlueprint.PapierMirror.Models.Nodes;
+﻿using MyBlueprint.PapierMirror.Models.Marks;
+using MyBlueprint.PapierMirror.Models.Nodes;
 
 namespace MyBlueprint.PapierMirror.Test;
 
@@ -30,6 +31,21 @@ internal class EqualityTests
         var result = documentA.Equals(documentB);
 
         await Assert.That(result).IsTrue();
+        await Assert.That(documentA).IsNotSameReferenceAs(documentB);
+    }
+
+    /// <summary>
+    /// Tests the equality of two documents with the same text.
+    /// </summary>
+    [Test]
+    public async Task EqualDocumentsWithMarks()
+    {
+        var documentA = new Document { Content = [new Paragraph { Content = [new TextNode { Text = "A" }], Marks = [new Strong()] }] };
+        var documentB = new Document { Content = [new Paragraph { Content = [new TextNode { Text = "A" }] }] };
+
+        var result = documentA.Equals(documentB);
+
+        await Assert.That(result).IsFalse();
         await Assert.That(documentA).IsNotSameReferenceAs(documentB);
     }
 
