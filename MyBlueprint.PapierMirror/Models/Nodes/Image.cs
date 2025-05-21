@@ -52,6 +52,27 @@ public class Image : Node
     /// <summary>
     /// Initializes a new instance of the <see cref="Image" /> class.
     /// </summary>
+    /// <param name="src">The image source.</param>
+    /// <param name="alt">The alternate text.</param>
+    /// <param name="title">The image title.</param>
+    /// <param name="width">The image width.</param>
+    /// <param name="height">The image height.</param>
+    public Image(string? src = null, string? alt = null, string? title = null, int? width = null, int? height = null)
+        : base("image")
+    {
+        Attributes = new ImageAttributes
+        {
+            Alt = alt,
+            Src = src,
+            Title = title,
+            Width = width,
+            Height = height
+        };
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Image" /> class.
+    /// </summary>
     /// <param name="node">The HTML Element to initialize from.</param>
     public Image(IElement node)
         : this()

@@ -31,8 +31,22 @@ public class Heading : Node
     /// <summary>
     /// Initializes a new instance of the <see cref="Heading" /> class.
     /// </summary>
-    public Heading()
-        : base("heading") { }
+    public Heading() : base("heading") { }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Heading" /> class.
+    /// </summary>
+    /// <param name="level">The level to initialize to.</param>
+    /// <param name="textAlign">The text alignment to initialize to.</param>
+    public Heading(int? level = null, string? textAlign = null)
+        : base("heading")
+    {
+        Attributes = new HeadingAttributes
+        {
+            Level = level,
+            TextAlign = textAlign
+        };
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Heading" /> class.
