@@ -1,5 +1,6 @@
 ﻿using AngleSharp.Dom;
 using System;
+using System.Linq;
 using System.Text.Json.Serialization;
 
 namespace MyBlueprint.PapierMirror;
@@ -58,7 +59,7 @@ public abstract class Mark : IEquatable<Mark>
     {
         if (other is null) return false;
         if (ReferenceEquals(this, other)) return true;
-        return Type == other.Type && Equals(Attributes, other.Attributes) && Tags.Equals(other.Tags);
+        return Type == other.Type && Equals(Attributes, other.Attributes) && Tags.SequenceEqual(other.Tags);
     }
 
     /// <inheritdoc />
@@ -73,6 +74,6 @@ public abstract class Mark : IEquatable<Mark>
     /// <inheritdoc />
     public override int GetHashCode()
     {
-        return HashCode.Combine(Type, Tags, AttributeType);
+        return HashCode.Combine(Type, HashCode.Combine(Tags.Select(t => t.GetHashCode()).ToArray()), AttributeType);
     }
 }

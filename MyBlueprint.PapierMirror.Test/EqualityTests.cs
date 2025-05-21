@@ -41,7 +41,7 @@ internal class EqualityTests
     public async Task EqualDocumentsWithMarks()
     {
         var documentA = new Document { Content = [new Paragraph { Content = [new TextNode { Text = "A" }], Marks = [new Strong()] }] };
-        var documentB = new Document { Content = [new Paragraph { Content = [new TextNode { Text = "A" }] }] };
+        var documentB = new Document { Content = [new Paragraph { Content = [new TextNode { Text = "A" }], Marks = [new Emphasis()] }] };
 
         var result = documentA.Equals(documentB);
 
