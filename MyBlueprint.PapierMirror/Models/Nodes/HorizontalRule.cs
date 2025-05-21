@@ -14,7 +14,7 @@ public class HorizontalRule : Node
         : base("horizontalRule") { }
 
     /// <inheritdoc/>
-    protected internal override string[] Tags => new[] { "hr" };
+    protected internal override string[] Tags => ["hr"];
 
     /// <inheritdoc />
     public override INode GetHtmlNode(IDocument document)

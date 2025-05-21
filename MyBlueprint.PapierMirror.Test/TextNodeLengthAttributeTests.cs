@@ -1,11 +1,9 @@
 ﻿using MyBlueprint.PapierMirror.Models.Nodes;
 using MyBlueprint.PapierMirror.Validation;
-using NUnit.Framework;
 using System.ComponentModel.DataAnnotations;
 
 namespace MyBlueprint.PapierMirror.Test;
 
-[TestFixture]
 internal class TextNodeLengthAttributeTests
 {
     private class ValidationTarget
@@ -29,47 +27,51 @@ internal class TextNodeLengthAttributeTests
     }
 
     [Test]
-    public void SumsSimpleText()
+    public async Task SumsSimpleText()
     {
-        var document = new Document { Content = new Node[] { new TextNode { Text = "1234" } } };
+        var document = new Document { Content = [new TextNode { Text = "1234" }] };
 
         var attribute = new TextNodeLengthAttribute(5);
         var textLength = attribute.SumTextLength(document);
-        Assert.That(textLength, Is.EqualTo(4));
+        await Assert.That(textLength).IsEqualTo(4);
 
         var result = ValidateNode(document);
-        Assert.That(result, Is.True);
+        await Assert.That(result).IsTrue();
     }
 
     [Test]
-    public void SumsNestedNodes()
+    public async Task SumsNestedNodes()
     {
         var document = new Document
         {
-            Content = new Node[] { new Paragraph { Content = new Node[] { new TextNode { Text = "123" }, new TextNode { Text = "45" } } } }
+            Content = [new Paragraph { Content = [new TextNode { Text = "123" }, new TextNode { Text = "45" }] }
+            ]
         };
 
         var attribute = new TextNodeLengthAttribute(5);
         var textLength = attribute.SumTextLength(document);
-        Assert.That(textLength, Is.EqualTo(5));
+        await Assert.That(textLength).IsEqualTo(5);
 
         var result = ValidateNode(document);
-        Assert.That(result, Is.True);
+        await Assert.That(result).IsTrue();
     }
 
     [Test]
-    public void RejectsTooManyCharacters()
+    public async Task RejectsTooManyCharacters()
     {
         var document = new Document
         {
-            Content = new Node[] { new Paragraph { Content = new Node[] { new TextNode { Text = "123" }, new TextNode { Text = "45" } } }, new Paragraph { Content = new Node[] { new TextNode { Text = "678" } } } }
+            Content = [new Paragraph { Content = [new TextNode { Text = "123" }, new TextNode { Text = "45" }] }, new Paragraph { Content =
+                [new TextNode { Text = "678" }]
+                }
+            ]
         };
 
         var attribute = new TextNodeLengthAttribute(5);
         var textLength = attribute.SumTextLength(document);
-        Assert.That(textLength, Is.EqualTo(8));
+        await Assert.That(textLength).IsEqualTo(8);
 
         var result = ValidateNode(document);
-        Assert.That(result, Is.False);
+        await Assert.That(result).IsFalse();
     }
 }

@@ -8,7 +8,7 @@ namespace MyBlueprint.PapierMirror.Models.Nodes;
 /// <summary>
 /// Header attributes.
 /// </summary>
-public class HeadingAttributes : NodeAttributes
+public record HeadingAttributes : NodeAttributes
 {
     /// <summary>
     /// Header level.
@@ -48,10 +48,16 @@ public class Heading : Node
     }
 
     /// <inheritdoc/>
-    protected internal override string[] Tags => new[] { "h1", "h2", "h3", "h4", "h5", "h6" };
+    protected internal override string[] Tags => ["h1", "h2", "h3", "h4", "h5", "h6"];
 
     /// <inheritdoc/>
     protected internal override Type AttributeType => typeof(HeadingAttributes);
+
+    /// <inheritdoc />
+    public override bool Equals(Node? node)
+    {
+        return base.Equals(node) && (node is not Heading h || h.Attributes == Attributes);
+    }
 
     /// <summary>
     /// Parse the header level from the tag.

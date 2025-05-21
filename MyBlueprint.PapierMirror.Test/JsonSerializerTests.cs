@@ -1,10 +1,8 @@
 ﻿using MyBlueprint.PapierMirror.Json;
-using NUnit.Framework;
 using System.Text.Json;
 
 namespace MyBlueprint.PapierMirror.Test;
 
-[TestFixture]
 public class JsonSerializerTests
 {
     /// <summary>
@@ -12,14 +10,15 @@ public class JsonSerializerTests
     /// </summary>
     /// <exception cref="InvalidOperationException"></exception>
     [Test]
-    public void SerializesFromJson()
+    public async Task SerializesFromJson()
     {
         var options = PapierMirrorJson.JsonOptions(Schema.All);
         var node = JsonSerializer.Deserialize<Node>(TestDocument.JsonString, options) ?? throw new InvalidOperationException("Failed");
 
-        Assert.NotNull(node);
-        Assert.NotNull(node.Content);
-        Assert.That(node.Content!.Count(), Is.EqualTo(5));
+        using var _ = Assert.Multiple();
+        await Assert.That(node).IsNotNull();
+        await Assert.That(node.Content).IsNotNull();
+        await Assert.That(node.Content!.Count()).IsEqualTo(5);
     }
 
     /// <summary>
@@ -27,12 +26,12 @@ public class JsonSerializerTests
     /// </summary>
     /// <exception cref="InvalidOperationException"></exception>
     [Test]
-    public void SerializesToJson()
+    public async Task SerializesToJson()
     {
         var options = PapierMirrorJson.JsonOptions(Schema.All);
         var node = JsonSerializer.Serialize(TestDocument.Document, options);
 
-        Assert.That(node, Is.Not.Null);
+        await Assert.That(node).IsNotNull();
     }
 
     /// <summary>
@@ -40,14 +39,14 @@ public class JsonSerializerTests
     /// </summary>
     /// <exception cref="InvalidOperationException"></exception>
     [Test]
-    public void ShouldSerializeReversibly()
+    public async Task ShouldSerializeReversibly()
     {
         var options = PapierMirrorJson.JsonOptions(Schema.All);
         var node = JsonSerializer.Deserialize<Node>(TestDocument.JsonString, options) ?? throw new InvalidOperationException("Failed");
 
-        Assert.That(node, Is.Not.Null);
+        await Assert.That(node).IsNotNull();
 
         var serialized = JsonSerializer.Serialize(node, options);
-        Assert.AreEqual(TestDocument.JsonString, serialized);
+        await Assert.That(serialized).IsEqualTo(TestDocument.JsonString);
     }
 }

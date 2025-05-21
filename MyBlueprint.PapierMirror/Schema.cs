@@ -43,8 +43,7 @@ public class Schema
     /// <summary>
     /// Default schema.
     /// </summary>
-    public static readonly Schema All = new(new Node[]
-    {
+    public static readonly Schema All = new([
         new BlockQuote(),
         new BulletList(),
         new CodeBlock(),
@@ -57,8 +56,7 @@ public class Schema
         new Paragraph(),
         new Heading(),
         new TextNode()
-    }, new Mark[]
-    {
+    ], [
         new Strong(),
         new Code(),
         new Link(),
@@ -69,5 +67,5 @@ public class Schema
         new Underline(),
         new Emphasis(),
         new Marked()
-    });
+    ]);
 }

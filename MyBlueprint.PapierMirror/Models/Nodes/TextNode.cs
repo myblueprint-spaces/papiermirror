@@ -27,13 +27,19 @@ public class TextNode : Node
     }
 
     /// <inheritdoc/>
-    protected internal override string[] Tags => new[] { "#text" };
+    protected internal override string[] Tags => ["#text"];
 
     /// <summary>
     /// The node's text content.
     /// </summary>
     [JsonConverter(typeof(DefaultStringConverter))]
     public string? Text { get; set; }
+
+    /// <inheritdoc />
+    public override bool Equals(Node? node)
+    {
+        return base.Equals(node) && (node is not TextNode tn || tn.Text == Text);
+    }
 
     /// <inheritdoc />
     public override INode GetHtmlNode(IDocument document)

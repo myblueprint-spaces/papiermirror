@@ -5,8 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using Document = MyBlueprint.PapierMirror.Models.Nodes.Document;
-using Node = MyBlueprint.PapierMirror.Node;
 
 namespace MyBlueprint.PapierMirror.Html;
 
@@ -71,7 +69,7 @@ internal class HtmlSerializer
         return pmDoc;
     }
 
-    private readonly List<Mark> _marks = new();
+    private readonly List<Mark> _marks = [];
 
     private IReadOnlyCollection<Node> ParseNode(INode htmlNode)
     {
@@ -89,7 +87,7 @@ internal class HtmlSerializer
             {
                 var node = (Node?)Activator.CreateInstance(nodeType,
                     BindingFlags.CreateInstance | BindingFlags.Instance | BindingFlags.Public |
-                    BindingFlags.OptionalParamBinding, binder: null, args: new object[] { child }, culture: null);
+                    BindingFlags.OptionalParamBinding, binder: null, args: [child], culture: null);
 
                 if (node == null)
                 {
@@ -117,7 +115,7 @@ internal class HtmlSerializer
             {
                 var mark = (Mark?)Activator.CreateInstance(markType,
                     BindingFlags.CreateInstance | BindingFlags.Instance | BindingFlags.Public |
-                    BindingFlags.OptionalParamBinding, binder: null, args: new object[] { child }, culture: null);
+                    BindingFlags.OptionalParamBinding, binder: null, args: [child], culture: null);
                 if (mark != null)
                 {
                     _marks.Add(mark);
@@ -146,7 +144,7 @@ internal class HtmlSerializer
     {
         var tag = GetHtmlNode(document, node);
 
-        foreach (var child in node.Content ?? Enumerable.Empty<Node>())
+        foreach (var child in node.Content ?? [])
         {
             tag.AppendChild(RenderNode(document, child));
         }
@@ -157,7 +155,7 @@ internal class HtmlSerializer
     private static INode GetHtmlNode(IDocument document, Node node)
     {
         var resultNode = node.GetHtmlNode(document);
-        foreach (var mark in node.Marks?.Reverse() ?? Array.Empty<Mark>())
+        foreach (var mark in node.Marks?.Reverse() ?? [])
         {
             var markHtmlNode = mark.GetHtmlNode(document);
             resultNode = markHtmlNode.AppendChild(resultNode).ParentElement!;

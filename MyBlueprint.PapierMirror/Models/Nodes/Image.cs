@@ -7,7 +7,7 @@ namespace MyBlueprint.PapierMirror.Models.Nodes;
 /// <summary>
 /// Image attributes.
 /// </summary>
-public class ImageAttributes : NodeAttributes
+public record ImageAttributes : NodeAttributes
 {
     /// <summary>
     /// Alternate text.
@@ -67,10 +67,16 @@ public class Image : Node
     }
 
     /// <inheritdoc/>
-    protected internal override string[] Tags => new[] { "img" };
+    protected internal override string[] Tags => ["img"];
 
     /// <inheritdoc/>
     protected internal override Type AttributeType => typeof(ImageAttributes);
+
+    /// <inheritdoc />
+    public override bool Equals(Node? node)
+    {
+        return base.Equals(node) && (node is not Image im || im.Attributes == Attributes);
+    }
 
     /// <inheritdoc />
     public override INode GetHtmlNode(IDocument document)

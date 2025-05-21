@@ -8,7 +8,7 @@ namespace MyBlueprint.PapierMirror.Models.Nodes;
 /// <summary>
 /// Paragraph attributes.
 /// </summary>
-public class ParagraphAttributes : NodeAttributes
+public record ParagraphAttributes : NodeAttributes
 {
     /// <summary>
     /// Text alignment.
@@ -40,10 +40,16 @@ public class Paragraph : Node
 
     /// <inheritdoc/>
     [JsonIgnore]
-    protected internal override string[] Tags => new[] { "p" };
+    protected internal override string[] Tags => ["p"];
 
     /// <inheritdoc/>
     protected internal override Type AttributeType => typeof(ParagraphAttributes);
+
+    /// <inheritdoc />
+    public override bool Equals(Node? node)
+    {
+        return base.Equals(node) && (node is not Paragraph p || p.Attributes == Attributes);
+    }
 
     private static ParagraphAttributes GetAttrs(IElement node)
     {

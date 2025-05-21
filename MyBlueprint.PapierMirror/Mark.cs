@@ -14,7 +14,7 @@ public class MarkAttributes
 /// <summary>
 /// A mark is a piece of information that can be attached to a node, such as it being emphasized, in code font, or a link. It has a type and optionally a set of attributes that provide further information (such as the target of the link).
 /// </summary>
-public abstract class Mark
+public abstract class Mark : IEquatable<Mark>
 {
     /// <summary>
     /// The type of this mark.
@@ -52,4 +52,27 @@ public abstract class Mark
     /// <param name="document"></param>
     /// <returns></returns>
     public abstract INode GetHtmlNode(IDocument document);
+
+    /// <inheritdoc />
+    public bool Equals(Mark? other)
+    {
+        if (other is null) return false;
+        if (ReferenceEquals(this, other)) return true;
+        return Type == other.Type && Equals(Attributes, other.Attributes) && Tags.Equals(other.Tags);
+    }
+
+    /// <inheritdoc />
+    public override bool Equals(object? obj)
+    {
+        if (obj is null) return false;
+        if (ReferenceEquals(this, obj)) return true;
+        if (obj.GetType() != GetType()) return false;
+        return Equals((Mark)obj);
+    }
+
+    /// <inheritdoc />
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Type, Tags, AttributeType);
+    }
 }

@@ -1,10 +1,9 @@
 ﻿using MyBlueprint.PapierMirror.Models.Nodes;
 using MyBlueprint.PapierMirror.Validation;
-using NUnit.Framework;
 using System.ComponentModel.DataAnnotations;
 
 namespace MyBlueprint.PapierMirror.Test;
-[TestFixture]
+
 internal class MaximumListDepthAttributeTests
 {
     private const int MaxDepth = 5;
@@ -42,7 +41,7 @@ internal class MaximumListDepthAttributeTests
         {
             var nestedList = new OrderedList();
             var normalItem = new ListItem { Content = new List<Node> { new Paragraph { Content = new List<Node> { new TextNode { Text = $"Text At Depth {i}" } } }, nestedList } };
-            list.Content = new List<Node>(list.Content ?? Enumerable.Empty<Node>()) { normalItem };
+            list.Content = new List<Node>(list.Content ?? []) { normalItem };
             list = nestedList;
         }
 
@@ -50,35 +49,35 @@ internal class MaximumListDepthAttributeTests
     }
 
     [Test]
-    public void TestsValidListDepth()
+    public async Task TestsValidListDepth()
     {
         var document = GetDocument(MaxDepth);
 
         var attribute = new MaximumListDepthAttribute(MaxDepth);
 
         var depth = attribute.MaxDepth(document);
-        Assert.AreEqual(MaxDepth, depth);
+        await Assert.That(depth).IsEqualTo(MaxDepth);
 
         var result = ValidateNode(document);
-        Assert.IsTrue(result);
+        await Assert.That(result).IsTrue();
     }
 
     [Test]
-    public void TestsInvalidListDepth()
+    public async Task TestsInvalidListDepth()
     {
         var document = GetDocument(MaxDepth + 1);
 
         var attribute = new MaximumListDepthAttribute(MaxDepth);
 
         var depth = attribute.MaxDepth(document);
-        Assert.AreEqual(MaxDepth + 1, depth);
+        await Assert.That(depth).IsEqualTo(MaxDepth + 1);
 
         var result = ValidateNode(document);
-        Assert.IsFalse(result);
+        await Assert.That(result).IsFalse();
     }
 
     [Test]
-    public void TestValidSiblingLists()
+    public async Task TestValidSiblingLists()
     {
         var document = new Document
         {
@@ -92,14 +91,14 @@ internal class MaximumListDepthAttributeTests
         var attribute = new MaximumListDepthAttribute(MaxDepth);
         var depth = attribute.MaxDepth(document);
 
-        Assert.AreEqual(MaxDepth, depth);
+        await Assert.That(depth).IsEqualTo(MaxDepth);
 
         var result = ValidateNode(document);
-        Assert.IsTrue(result);
+        await Assert.That(result).IsTrue();
     }
 
     [Test]
-    public void TestInvalidSiblingLists()
+    public async Task TestInvalidSiblingLists()
     {
         var document = new Document
         {
@@ -113,9 +112,9 @@ internal class MaximumListDepthAttributeTests
         var attribute = new MaximumListDepthAttribute(MaxDepth);
         var depth = attribute.MaxDepth(document);
 
-        Assert.AreEqual(MaxDepth * 2, depth);
+        await Assert.That(depth).IsEqualTo(MaxDepth * 2);
 
         var result = ValidateNode(document);
-        Assert.IsFalse(result);
+        await Assert.That(result).IsFalse();
     }
 }

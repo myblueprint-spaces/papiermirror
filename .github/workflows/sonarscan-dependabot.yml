@@ -31,12 +31,12 @@ jobs:
           - 6379:6379
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
       with:
         fetch-depth: 0
         ref: ${{ github.event.pull_request.head.sha }}
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-    - uses: actions/cache@v3
+        token: ${{ secrets.GITHUB_TOKEN }}
+    - uses: actions/cache@v4
       name: Cache dotnet
       with:
         path: ~/.nuget/packages
@@ -44,26 +44,26 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-nuget-
     - name: Cache SonarCloud packages
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ~/sonar/cache
         key: ${{ runner.os }}-sonar
         restore-keys: ${{ runner.os }}-sonar
     - name: Cache SonarCloud scanner
       id: cache-sonar-scanner
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ./.sonar/scanner
         key: ${{ runner.os }}-sonar-scanner
         restore-keys: ${{ runner.os }}-sonar-scanner
-    - uses: actions/setup-java@v2 # Needed to run SonarQube scanner
+    - uses: actions/setup-java@v4 # Needed to run SonarQube scanner
       with:
         distribution: 'microsoft'
         java-version: '17'
     - name: Setup .NET
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 6.0.x
+        dotnet-version: 8.0.x
     - name: Install SonarCloud scanner
       if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
       run: |
