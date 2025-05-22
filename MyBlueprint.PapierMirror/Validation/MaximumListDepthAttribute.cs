@@ -1,7 +1,6 @@
 ﻿using MyBlueprint.PapierMirror.Models.Nodes;
 using System;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 
 namespace MyBlueprint.PapierMirror.Validation
 {
@@ -55,7 +54,7 @@ namespace MyBlueprint.PapierMirror.Validation
         public int MaxDepth(Node node)
         {
             var subDepth = 0;
-            foreach (var child in node.Content ?? Enumerable.Empty<Node>())
+            foreach (var child in node.Content ?? [])
             {
                 if (Array.IndexOf(ListTypes, child.GetType()) >= 0)
                 {

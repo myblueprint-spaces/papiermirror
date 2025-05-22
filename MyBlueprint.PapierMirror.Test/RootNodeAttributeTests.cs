@@ -1,11 +1,9 @@
 ﻿using MyBlueprint.PapierMirror.Models.Nodes;
 using MyBlueprint.PapierMirror.Validation;
-using NUnit.Framework;
 using System.ComponentModel.DataAnnotations;
 
 namespace MyBlueprint.PapierMirror.Test;
 
-[TestFixture]
 internal class RootNodeAttributeTests
 {
     private class ValidationTarget
@@ -29,32 +27,32 @@ internal class RootNodeAttributeTests
     }
 
     [Test]
-    public void ValidatesCorrectRootNode()
+    public async Task ValidatesCorrectRootNode()
     {
         var document = new Document();
 
         var result = ValidateNode(document);
-        Assert.That(result, Is.True);
+        await Assert.That(result).IsTrue();
     }
 
     /// <summary>
     /// Null values should be handled by the <see cref="RequiredAttribute"/>.
     /// </summary>
     [Test]
-    public void ValidatesNullNode()
+    public async Task ValidatesNullNode()
     {
         Node? document = null;
 
         var result = ValidateNode(document);
-        Assert.That(result, Is.True);
+        await Assert.That(result).IsTrue();
     }
 
     [Test]
-    public void ValidatesIncorrectRootNode()
+    public async Task ValidatesIncorrectRootNode()
     {
         Node textNode = new TextNode { Text = "Test"};
 
         var result = ValidateNode(textNode);
-        Assert.That(result, Is.False);
+        await Assert.That(result).IsFalse();
     }
 }

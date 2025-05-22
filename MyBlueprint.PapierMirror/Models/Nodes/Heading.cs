@@ -8,7 +8,7 @@ namespace MyBlueprint.PapierMirror.Models.Nodes;
 /// <summary>
 /// Header attributes.
 /// </summary>
-public class HeadingAttributes : NodeAttributes
+public record HeadingAttributes : NodeAttributes
 {
     /// <summary>
     /// Header level.
@@ -31,8 +31,22 @@ public class Heading : Node
     /// <summary>
     /// Initializes a new instance of the <see cref="Heading" /> class.
     /// </summary>
-    public Heading()
-        : base("heading") { }
+    public Heading() : base("heading") { }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="Heading" /> class.
+    /// </summary>
+    /// <param name="level">The level to initialize to.</param>
+    /// <param name="textAlign">The text alignment to initialize to.</param>
+    public Heading(int? level = null, string? textAlign = null)
+        : base("heading")
+    {
+        Attributes = new HeadingAttributes
+        {
+            Level = level,
+            TextAlign = textAlign
+        };
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="Heading" /> class.
@@ -48,10 +62,16 @@ public class Heading : Node
     }
 
     /// <inheritdoc/>
-    protected internal override string[] Tags => new[] { "h1", "h2", "h3", "h4", "h5", "h6" };
+    protected internal override string[] Tags => ["h1", "h2", "h3", "h4", "h5", "h6"];
 
     /// <inheritdoc/>
     protected internal override Type AttributeType => typeof(HeadingAttributes);
+
+    /// <inheritdoc />
+    public override bool Equals(Node? node)
+    {
+        return base.Equals(node) && (node is not Heading h || h.Attributes == Attributes);
+    }
 
     /// <summary>
     /// Parse the header level from the tag.

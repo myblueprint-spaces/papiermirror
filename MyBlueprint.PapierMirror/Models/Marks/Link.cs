@@ -54,7 +54,7 @@ public class Link : Mark
     }
 
     /// <inheritdoc/>
-    protected internal override string[] Tags => new[] { "a" };
+    protected internal override string[] Tags => ["a"];
 
     /// <inheritdoc/>
     protected internal override Type AttributeType => typeof(LinkAttributes);

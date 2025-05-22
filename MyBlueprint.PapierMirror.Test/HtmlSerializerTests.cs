@@ -1,9 +1,7 @@
 ﻿using MyBlueprint.PapierMirror.Html;
-using NUnit.Framework;
 
 namespace MyBlueprint.PapierMirror.Test;
 
-[TestFixture]
 internal class HtmlSerializerTests
 {
     /// <summary>
@@ -15,8 +13,8 @@ internal class HtmlSerializerTests
     {
         var result = await PapierMirrorHtmlSerializer.SerializeToHtmlAsync(Schema.All, TestDocument.Document);
 
-        Assert.That(result, Is.Not.Null);
-        Assert.That(result.Length, Is.GreaterThan(0));
+        await Assert.That(result).IsNotNull();
+        await Assert.That(result.Length).IsGreaterThan(0);
     }
 
     /// <summary>
@@ -28,9 +26,10 @@ internal class HtmlSerializerTests
     {
         var result = await PapierMirrorHtmlSerializer.SerializeFromHtmlAsync(Schema.All, TestDocument.HtmlString);
 
-        Assert.NotNull(result);
-        Assert.NotNull(result.Content);
-        Assert.That(result.Content!.Count(), Is.EqualTo(5));
+        using var _ = Assert.Multiple();
+        await Assert.That(result).IsNotNull();
+        await Assert.That(result.Content).IsNotNull();
+        await Assert.That(result.Content!.Count()).IsEqualTo(5);
     }
 
     /// <summary>
@@ -44,6 +43,6 @@ internal class HtmlSerializerTests
 
         var document = await PapierMirrorHtmlSerializer.SerializeToHtmlAsync(Schema.All, node);
 
-        Assert.AreEqual(TestDocument.HtmlString, document);
+        await Assert.That(TestDocument.HtmlString).IsEqualTo(document);
     }
 }

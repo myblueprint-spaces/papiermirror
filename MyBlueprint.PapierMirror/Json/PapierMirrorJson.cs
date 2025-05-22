@@ -36,13 +36,13 @@ public static class PapierMirrorJson
     /// <returns>An enumeration of the converters.</returns>
     public static IEnumerable<JsonConverter> GetConverters(Schema schema)
     {
-        return new JsonConverter[]
-        {
+        return
+        [
             new NodeConverter<Node>(schema),
             new MarkConverter<Mark>(schema),
             new NodeAttributeConverter<NodeAttributes>(schema.Nodes.Select(n => n.AttributeType).Distinct()),
             new MarkAttributeConverter<MarkAttributes>(schema.Marks.Select(n => n.AttributeType).Distinct())
-        };
+        ];
     }
 
     /// <summary>

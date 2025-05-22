@@ -31,12 +31,12 @@ jobs:
           - 6379:6379
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
       with:
         fetch-depth: 0
         ref: ${{ github.event.pull_request.head.sha }}
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-    - uses: actions/cache@v3
+        token: ${{ secrets.GITHUB_TOKEN }}
+    - uses: actions/cache@v4
       name: Cache dotnet
       with:
         path: ~/.nuget/packages
@@ -44,40 +44,52 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-nuget-
     - name: Cache SonarCloud packages
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ~/sonar/cache
         key: ${{ runner.os }}-sonar
         restore-keys: ${{ runner.os }}-sonar
     - name: Cache SonarCloud scanner
       id: cache-sonar-scanner
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       with:
         path: ./.sonar/scanner
         key: ${{ runner.os }}-sonar-scanner
         restore-keys: ${{ runner.os }}-sonar-scanner
-    - uses: actions/setup-java@v2 # Needed to run SonarQube scanner
+    - uses: actions/setup-java@v4 # Needed to run SonarQube scanner
       with:
         distribution: 'microsoft'
         java-version: '17'
     - name: Setup .NET
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: 6.0.x
+        dotnet-version: 8.0.x
     - name: Install SonarCloud scanner
       if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
       run: |
         mkdir ~/.sonar
         mkdir ~/.sonar/scanner
         dotnet tool update dotnet-sonarscanner --tool-path ~/.sonar/scanner
+    - name: Cache Coverage
+      id: cache-coverage
+      uses: runs-on/cache@v4
+      with:
+        path: ~/.dotnet/coverage
+        key: ${{ runner.os }}-coverage
+        restore-keys: ${{ runner.os }}-coverage
+    - name: Install Coverage tool
+      if: steps.cache-coverage.outputs.cache-hit != 'true'
+      run: |
+        mkdir ~/.dotnet/coverage
+        dotnet tool update dotnet-coverage --tool-path ~/.dotnet/coverage
     - name: Restore dependencies
       run: dotnet restore
     - name: Build and scan
       run: |
         dotnet tool install JetBrains.dotCover.GlobalTool --global 
-        ~/.sonar/scanner/dotnet-sonarscanner begin /k:"${{ env.SONAR_PROJECTKEY }}" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /o:"${{ env.SONAR_ORGANIZATION }}" /d:sonar.pullrequest.key="${{ github.event.number }}" /d:sonar.pullrequest.branch="${{ github.event.pull_request.head.ref }}" /d:sonar.pullrequest.base="${{ github.event.pull_request.base.ref }}" /d:sonar.pullrequest.github.repository="${{ github.event.repository.name }}" /d:sonar.pullrequest.provider="github" /d:sonar.cs.dotcover.reportsPaths=dotCover.Output.html
+        ~/.sonar/scanner/dotnet-sonarscanner begin /k:"${{ env.SONAR_PROJECTKEY }}" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /o:"${{ env.SONAR_ORGANIZATION }}" /d:sonar.pullrequest.key="${{ github.event.number }}" /d:sonar.pullrequest.branch="${{ github.event.pull_request.head.ref }}" /d:sonar.pullrequest.base="${{ github.event.pull_request.base.ref }}" /d:sonar.pullrequest.github.repository="${{ github.event.repository.name }}" /d:sonar.pullrequest.provider="github" /d:sonar.cs.vscoveragexml.reportsPaths="coverage/**/coverage.xml"
         dotnet build --no-restore
-        dotnet dotcover test --dcReportType=HTML --no-build
+        ~/.dotnet/coverage/dotnet-coverage collect --output coverage/coverage.xml --output-format xml dotnet test --no-build
         ~/.sonar/scanner/dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

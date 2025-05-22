@@ -21,7 +21,7 @@ public class Strike : Mark
         : this() { }
 
     /// <inheritdoc/>
-    protected internal override string[] Tags => new[] { "s" };
+    protected internal override string[] Tags => ["s"];
 
     /// <inheritdoc />
     public override INode GetHtmlNode(IDocument document)

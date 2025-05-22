@@ -14,7 +14,7 @@ public class BulletList : Node
         : base("bulletList") { }
 
     /// <inheritdoc/>
-    protected internal override string[] Tags => new[] { "ul" };
+    protected internal override string[] Tags => ["ul"];
 
     /// <inheritdoc />
     public override INode GetHtmlNode(IDocument document)

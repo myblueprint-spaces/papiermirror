@@ -21,32 +21,32 @@ jobs:
       group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.base_ref || github.ref }}
       cancel-in-progress: true
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: actions/cache@v3
+      - uses: actions/cache@v4
         with:
           path: ~/.nuget/packages
           key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
           restore-keys: |
             ${{ runner.os }}-nuget-
-      - uses: actions/setup-java@v3 # Needed to run SonarQube scanner
+      - uses: actions/setup-java@v4 # Needed to run SonarQube scanner
         with:
           distribution: 'microsoft'
           java-version: '17'
       - name: Setup .NET
-        uses: actions/setup-dotnet@v3
+        uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: 6.0.x
+          dotnet-version: 8.0.x
       - name: Cache SonarCloud packages
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/sonar/cache
           key: ${{ runner.os }}-sonar
           restore-keys: ${{ runner.os }}-sonar
       - name: Cache SonarCloud scanner
         id: cache-sonar-scanner
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ./.sonar/scanner
           key: ${{ runner.os }}-sonar-scanner
@@ -57,19 +57,18 @@ jobs:
           mkdir ~/.sonar
           mkdir ~/.sonar/scanner
           dotnet tool update dotnet-sonarscanner --tool-path ~/.sonar/scanner
-      - name: Cache dotCover
-        id: cache-dotcover
-        uses: actions/cache@v3
+      - name: Cache Coverage
+        id: cache-coverage
+        uses: runs-on/cache@v4
         with:
-          path: ./.jetbrains/dotcover
-          key: ${{ runner.os }}-jetbrains-dotcover
-          restore-keys: ${{ runner.os }}-jetbrains-dotcover
-      - name: Install dotCover
-        if: steps.cache-dotcover.outputs.cache-hit != 'true'
+          path: ~/.dotnet/coverage
+          key: ${{ runner.os }}-coverage
+          restore-keys: ${{ runner.os }}-coverage
+      - name: Install Coverage tool
+        if: steps.cache-coverage.outputs.cache-hit != 'true'
         run: |
-          mkdir ~/.jetbrains
-          mkdir ~/.jetbrains/dotcover
-          dotnet tool update JetBrains.dotCover.GlobalTool --tool-path ~/.jetbrains/dotcover
+          mkdir ~/.dotnet/coverage
+          dotnet tool update dotnet-coverage --tool-path ~/.dotnet/coverage
       - name: Restore dependencies
         run: dotnet restore
         env: 
@@ -77,9 +76,9 @@ jobs:
       - name: Build and scan
         if: ${{ github.event_name != 'pull_request' }}
         run: |
-          ~/.sonar/scanner/dotnet-sonarscanner begin /k:"${{ env.SONAR_PROJECTKEY }}" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /o:"${{ env.SONAR_ORGANIZATION }}" /d:sonar.cs.dotcover.reportsPaths=dotCover.Output.html
+          ~/.sonar/scanner/dotnet-sonarscanner begin /k:"${{ env.SONAR_PROJECTKEY }}" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /o:"${{ env.SONAR_ORGANIZATION }}" /d:sonar.cs.vscoveragexml.reportsPaths="coverage/**/coverage.xml"
           dotnet build --no-restore
-          ~/.jetbrains/dotcover/dotnet-dotcover test --dcReportType=HTML --no-build
+          ~/.dotnet/coverage/dotnet-coverage collect --output coverage/coverage.xml --output-format xml dotnet test --no-build
           ~/.sonar/scanner/dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -87,9 +86,9 @@ jobs:
       - name: Build and scan for PR
         if: ${{ github.event_name == 'pull_request' }}
         run: |
-          ~/.sonar/scanner/dotnet-sonarscanner begin /k:"${{ env.SONAR_PROJECTKEY }}" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /o:"${{ env.SONAR_ORGANIZATION }}" /d:sonar.pullrequest.key="${{ github.event.number }}" /d:sonar.pullrequest.branch="${{ github.event.pull_request.head.ref }}" /d:sonar.pullrequest.base="${{ github.event.pull_request.base.ref }}" /d:sonar.pullrequest.github.repository="${{ github.event.repository.name }}" /d:sonar.pullrequest.provider="github" /d:sonar.cs.dotcover.reportsPaths=dotCover.Output.html
+          ~/.sonar/scanner/dotnet-sonarscanner begin /k:"${{ env.SONAR_PROJECTKEY }}" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /o:"${{ env.SONAR_ORGANIZATION }}" /d:sonar.pullrequest.key="${{ github.event.number }}" /d:sonar.pullrequest.branch="${{ github.event.pull_request.head.ref }}" /d:sonar.pullrequest.base="${{ github.event.pull_request.base.ref }}" /d:sonar.pullrequest.github.repository="${{ github.event.repository.name }}" /d:sonar.pullrequest.provider="github" /d:sonar.cs.vscoveragexml.reportsPaths="coverage/**/coverage.xml"
           dotnet build --no-restore
-          ~/.jetbrains/dotcover/dotnet-dotcover test --dcReportType=HTML --no-build
+          ~/.dotnet/coverage/dotnet-coverage collect --output coverage/coverage.xml --output-format xml dotnet test --no-build
           ~/.sonar/scanner/dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

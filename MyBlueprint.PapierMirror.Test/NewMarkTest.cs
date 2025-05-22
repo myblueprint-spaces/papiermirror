@@ -1,6 +1,5 @@
 ﻿using AngleSharp.Dom;
 using MyBlueprint.PapierMirror.Json;
-using NUnit.Framework;
 using System.Text.Json;
 
 namespace MyBlueprint.PapierMirror.Test
@@ -11,7 +10,7 @@ namespace MyBlueprint.PapierMirror.Test
 
         public CustomMark(INode node) : this() { }
 
-        protected override string[] Tags => new[] { "custom" };
+        protected override string[] Tags => ["custom"];
 
         public override INode GetHtmlNode(IDocument document)
         {
@@ -19,21 +18,20 @@ namespace MyBlueprint.PapierMirror.Test
         }
     }
 
-    [TestFixture]
     public class NewMarkTest
     {
         [Test]
-        public void SerializesCustomNode()
+        public async Task SerializesCustomNode()
         {
             var nodeString = "{\"type\":\"custom\"}";
 
-            var options = PapierMirrorJson.JsonOptions(new Schema(new[] { new CustomMark()}));
+            var options = PapierMirrorJson.JsonOptions(new Schema([new CustomMark()]));
             var node = JsonSerializer.Deserialize<Node>(nodeString, options) ?? throw new InvalidOperationException("Failed");
 
-            Assert.That(node, Is.Not.Null);
+            await Assert.That(node).IsNotNull();
 
             var serialized = JsonSerializer.Serialize(node, options);
-            Assert.AreEqual(nodeString, serialized);
+            await Assert.That(nodeString).IsEqualTo(serialized);
         }
     }
 }

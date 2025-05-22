@@ -5,7 +5,7 @@ namespace MyBlueprint.PapierMirror.Models.Nodes;
 /// <summary>
 /// Ordered list attributes.
 /// </summary>
-public class OrderedListAttributes : NodeAttributes
+public record OrderedListAttributes : NodeAttributes
 {
     /// <summary>
     /// An integer to start counting from for the list items.
@@ -28,9 +28,15 @@ public class OrderedList : Node
     }
 
     /// <inheritdoc/>
-    protected internal override string[] Tags => new[] { "ol" };
+    protected internal override string[] Tags => ["ol"];
 
     internal const int DefaultStart = 1;
+
+    /// <inheritdoc />
+    public override bool Equals(Node? node)
+    {
+        return base.Equals(node) && (node is not OrderedList ol || ol.Attributes == Attributes);
+    }
 
     /// <inheritdoc />
     public override INode GetHtmlNode(IDocument document)

@@ -8,14 +8,14 @@ namespace MyBlueprint.PapierMirror;
 /// <summary>
 /// Default node attributes.
 /// </summary>
-public class NodeAttributes
+public record NodeAttributes
 {
 }
 
 /// <summary>
 /// A node describes the type of the content, and holds a fragment containing its children.
 /// </summary>
-public abstract class Node
+public abstract class Node : IEquatable<Node>
 {
     /// <summary>
     /// The type of this node.
@@ -65,4 +65,75 @@ public abstract class Node
     /// <param name="document"></param>
     /// <returns></returns>
     public abstract INode GetHtmlNode(IDocument document);
+
+    /// <inheritdoc />
+    public virtual bool Equals(Node? other)
+    {
+        if (other is null) return false;
+        if (ReferenceEquals(this, other)) return true;
+        if (Type != other.Type) return false;
+
+        if ((Content == null || other.Content == null) && !ReferenceEquals(Content, other.Content)) return false;
+        if (Content != null && other.Content != null)
+        {
+            if (!CompareEnumerators(Content, other.Content))
+            {
+                return false;
+            }
+        }
+
+        if ((Marks == null || other.Marks == null) && !ReferenceEquals(Marks, other.Marks)) return false;
+        if (Marks != null && other.Marks != null)
+        {
+            if (!CompareEnumerators(Marks, other.Marks))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /// <inheritdoc />
+    private static bool CompareEnumerators<T>(IEnumerable<T> a, IEnumerable<T> b)
+    {
+        using var leftEnumerator = a.GetEnumerator();
+        using var rightEnumerator = b.GetEnumerator();
+
+        var lHas = leftEnumerator.MoveNext();
+        var rHas = rightEnumerator.MoveNext();
+        do
+        {
+            var c = leftEnumerator.Current;
+            var o = rightEnumerator.Current;
+
+            if (!c.Equals(o))
+            {
+                return false;
+            }
+
+            lHas = leftEnumerator.MoveNext();
+            rHas = rightEnumerator.MoveNext();
+            if (lHas != rHas)
+            {
+                return false;
+            }
+        } while (lHas && rHas);
+
+        return true;
+    }
+
+    /// <inheritdoc />
+    public override bool Equals(object? obj)
+    {
+        if (obj is null) return false;
+        if (ReferenceEquals(this, obj)) return true;
+        if (obj.GetType() != GetType()) return false;
+        return Equals((Node)obj);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Type, Attributes, Content, Marks);
+    }
 }

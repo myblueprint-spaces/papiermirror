@@ -14,7 +14,7 @@ public class HardBreak : Node
         : base("hardBreak") { }
 
     /// <inheritdoc/>
-    protected internal override string[] Tags => new[] { "br" };
+    protected internal override string[] Tags => ["br"];
 
     /// <inheritdoc />
     public override INode GetHtmlNode(IDocument document)
