@@ -24,7 +24,6 @@ public class OrderedList : Node
     public OrderedList()
         : base("orderedList")
     {
-        Attributes = new OrderedListAttributes();
     }
 
     /// <inheritdoc/>
