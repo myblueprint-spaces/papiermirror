@@ -37,16 +37,17 @@ public class JsonSerializerTests
     /// <summary>
     /// Tests the serialization between JSON to PapierMirror can happen reversibly.
     /// </summary>
+    /// <param name="testString"></param>
     /// <exception cref="InvalidOperationException"></exception>
-    [Test]
-    public async Task ShouldSerializeReversibly()
+    [Test, Arguments(TestDocument.JsonString), Arguments(TestDocument.ListString)]
+    public async Task ShouldSerializeReversibly(string testString)
     {
         var options = PapierMirrorJson.JsonOptions(Schema.All);
-        var node = JsonSerializer.Deserialize<Node>(TestDocument.JsonString, options) ?? throw new InvalidOperationException("Failed");
+        var node = JsonSerializer.Deserialize<Node>(testString, options) ?? throw new InvalidOperationException("Failed");
 
         await Assert.That(node).IsNotNull();
 
         var serialized = JsonSerializer.Serialize(node, options);
-        await Assert.That(serialized).IsEqualTo(TestDocument.JsonString);
+        await Assert.That(serialized).IsEqualTo(testString);
     }
 }

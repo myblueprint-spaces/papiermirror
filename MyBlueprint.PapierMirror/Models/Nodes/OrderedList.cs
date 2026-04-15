@@ -1,4 +1,6 @@
 ﻿using AngleSharp.Dom;
+using System;
+using System.Text.Json.Serialization;
 
 namespace MyBlueprint.PapierMirror.Models.Nodes;
 
@@ -8,8 +10,9 @@ namespace MyBlueprint.PapierMirror.Models.Nodes;
 public record OrderedListAttributes : NodeAttributes
 {
     /// <summary>
-    /// An integer to start counting from for the list items.
+    /// An integer to start counting from for the list items (ProseMirror JSON name: <c>order</c>).
     /// </summary>
+    [JsonPropertyName("order")]
     public int Start { get; set; } = OrderedList.DefaultStart;
 }
 
@@ -30,6 +33,9 @@ public class OrderedList : Node
     protected internal override string[] Tags => ["ol"];
 
     internal const int DefaultStart = 1;
+
+    /// <inheritdoc/>
+    protected internal override Type AttributeType => typeof(OrderedListAttributes);
 
     /// <inheritdoc />
     public override bool Equals(Node? node)
