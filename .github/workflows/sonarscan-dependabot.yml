@@ -88,10 +88,10 @@ jobs:
     - name: Build and scan
       run: |
         dotnet tool install JetBrains.dotCover.GlobalTool --global 
-        ~/.sonar/scanner/dotnet-sonarscanner begin /k:"${{ env.SONAR_PROJECTKEY }}" /d:sonar.login="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /o:"${{ env.SONAR_ORGANIZATION }}" /d:sonar.pullrequest.key="${{ github.event.number }}" /d:sonar.pullrequest.branch="${{ github.event.pull_request.head.ref }}" /d:sonar.pullrequest.base="${{ github.event.pull_request.base.ref }}" /d:sonar.pullrequest.github.repository="${{ github.event.repository.name }}" /d:sonar.pullrequest.provider="github" /d:sonar.cs.vscoveragexml.reportsPaths="coverage/**/coverage.xml"
+        ~/.sonar/scanner/dotnet-sonarscanner begin /k:"${{ env.SONAR_PROJECTKEY }}" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.host.url="https://sonarcloud.io" /o:"${{ env.SONAR_ORGANIZATION }}" /d:sonar.pullrequest.key="${{ github.event.number }}" /d:sonar.pullrequest.branch="${{ github.event.pull_request.head.ref }}" /d:sonar.pullrequest.base="${{ github.event.pull_request.base.ref }}" /d:sonar.pullrequest.github.repository="${{ github.event.repository.name }}" /d:sonar.pullrequest.provider="github" /d:sonar.cs.vscoveragexml.reportsPaths="coverage/**/coverage.xml"
         dotnet build --no-restore
         ~/.dotnet/coverage/dotnet-coverage collect --output coverage/coverage.xml --output-format xml dotnet test --no-build
-        ~/.sonar/scanner/dotnet-sonarscanner end /d:sonar.login="${{ secrets.SONAR_TOKEN }}"
+        ~/.sonar/scanner/dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         DOTNET_ROLL_FORWARD: Major
