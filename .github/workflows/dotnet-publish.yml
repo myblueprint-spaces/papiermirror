@@ -13,20 +13,22 @@ jobs:
       contents: read
       packages: write
     env:
-      NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      NUGET_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      VERSION: ${{ github.event.release.tag_name }}
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
     - name: Setup .NET
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
       with:
-        dotnet-version: 8.0.x
+        global-json-file: global.json
         source-url: https://nuget.pkg.github.com/myblueprint-spaces/index.json
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
-      run: dotnet build -c Release --no-restore /p:Version=${{ github.event.release.tag_name }}
+      run: dotnet build -c Release --no-restore -p:Version="$VERSION"
+    - name: Test
+      run: dotnet test -c Release --no-build
     - name: Pack
-      run: dotnet pack -c Release /p:Version=${{ github.event.release.tag_name }}
+      run: dotnet pack -c Release --no-build -p:Version="$VERSION" -o artifacts
     - name: Push
-      run: |
-        dotnet nuget push MyBlueprint.PapierMirror/bin/Release/MyBlueprint.PapierMirror.${{ github.event.release.tag_name }}.nupkg -k $NUGET_AUTH_TOKEN
+      run: dotnet nuget push "artifacts/*.nupkg" -k "$NUGET_AUTH_TOKEN" --skip-duplicate

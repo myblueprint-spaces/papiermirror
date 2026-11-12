@@ -1,0 +1,26 @@
+@*
+    Entry point: renders a PapierMirror document (or any node) as HTML.
+    A Document node renders only its children, so the output can be embedded in a page.
+
+    Blazor:            <PapierMirrorContent Node="@doc" />
+    MVC/Razor Pages:   <component type="typeof(PapierMirrorContent)" render-mode="Static" param-Node="Model.Body" />
+    Outside HTTP:      await PapierMirrorRazorRenderer.RenderAsync(doc)
+*@
+@if (Node is not null)
+{
+    <PapierMirrorNode Node="Node" Options="Options" />
+}
+
+@code {
+    /// <summary>
+    /// The document or node to render.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Node? Node { get; set; }
+
+    /// <summary>
+    /// Rendering options. Defaults to <see cref="PapierMirrorRenderOptions.Default"/>.
+    /// </summary>
+    [Parameter]
+    public PapierMirrorRenderOptions? Options { get; set; }
+}

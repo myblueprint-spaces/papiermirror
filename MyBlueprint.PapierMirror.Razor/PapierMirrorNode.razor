@@ -1,0 +1,121 @@
+@* Renders a single node: its element (or override component), wrapped in its marks, containing its children. *@
+@WrapMarks(Body)
+
+@code {
+    /// <summary>
+    /// The node to render.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Node? Node { get; set; }
+
+    /// <summary>
+    /// Rendering options. Defaults to <see cref="PapierMirrorRenderOptions.Default"/>.
+    /// </summary>
+    [Parameter]
+    public PapierMirrorRenderOptions? Options { get; set; }
+
+    private PapierMirrorRenderOptions Opts => Options ?? PapierMirrorRenderOptions.Default;
+
+    private RenderFragment Body => RenderBody;
+
+    private RenderFragment Children => RenderChildren;
+
+    // The first mark is the outermost element, matching HtmlSerializer.
+    private RenderFragment WrapMarks(RenderFragment content)
+    {
+        foreach (var mark in Node?.Marks?.Reverse() ?? [])
+        {
+            var inner = content;
+            content = @<PapierMirrorMark Mark="mark" Options="Options">@inner</PapierMirrorMark>;
+        }
+
+        return content;
+    }
+
+    private void RenderChildren(RenderTreeBuilder __builder)
+    {
+        foreach (var child in Node?.Content ?? [])
+        {
+            <PapierMirrorNode Node="child" Options="Options" />
+        }
+    }
+
+    private void RenderBody(RenderTreeBuilder __builder)
+    {
+        if (Node is null)
+        {
+            return;
+        }
+
+        if (Opts.NodeComponents.TryGetValue(Node.GetType(), out var component))
+        {
+            var parameters = new Dictionary<string, object?> { ["Node"] = Node, ["ChildContent"] = Children };
+            <DynamicComponent Type="component" Parameters="parameters" />
+            return;
+        }
+
+        switch (Node)
+        {
+            case TextNode text:
+                __builder.AddContent(0, text.Text);
+                break;
+            case Document:
+                RenderChildren(__builder);
+                break;
+            case Paragraph paragraph:
+                <p style="@RenderHelpers.TextAlignStyle((paragraph.Attributes as ParagraphAttributes)?.TextAlign, Opts)">@Children</p>
+                break;
+            case Heading heading:
+                var headingAttrs = heading.Attributes as HeadingAttributes;
+                var level = Math.Clamp(headingAttrs?.Level ?? 1, 1, 6);
+                __builder.OpenElement(1, $"h{level}");
+                __builder.AddAttribute(2, "style", RenderHelpers.TextAlignStyle(headingAttrs?.TextAlign, Opts));
+                __builder.AddContent(3, Children);
+                __builder.CloseElement();
+                break;
+            case BulletList:
+                <ul>@Children</ul>
+                break;
+            case OrderedList orderedList:
+                // 1 is the default start (OrderedList.DefaultStart) and is omitted.
+                var start = (orderedList.Attributes as OrderedListAttributes)?.Start;
+                <ol start="@(start is null or 1 ? null : start)">@Children</ol>
+                break;
+            case ListItem:
+                <li>@Children</li>
+                break;
+            case BlockQuote:
+                <blockquote>@Children</blockquote>
+                break;
+            case CodeBlock:
+                <pre>@Children</pre>
+                break;
+            case HorizontalRule:
+                <hr />
+                break;
+            case HardBreak:
+                <br />
+                break;
+            case Image image:
+                var img = image.Attributes as ImageAttributes;
+                <img src="@Opts.UrlSanitizer(RenderHelpers.NullIfEmpty(img?.Src))"
+                     alt="@RenderHelpers.NullIfEmpty(img?.Alt)"
+                     title="@RenderHelpers.NullIfEmpty(img?.Title)"
+                     width="@img?.Width"
+                     height="@img?.Height" />
+                break;
+            default:
+                switch (Opts.UnknownNodeBehavior)
+                {
+                    case UnknownNodeBehavior.RenderChildren:
+                        RenderChildren(__builder);
+                        break;
+                    case UnknownNodeBehavior.Throw:
+                        throw new InvalidOperationException(
+                            $"No renderer for node type '{Node.Type}' ({Node.GetType().FullName}). Register one in {nameof(PapierMirrorRenderOptions)}.{nameof(PapierMirrorRenderOptions.NodeComponents)}.");
+                }
+
+                break;
+        }
+    }
+}

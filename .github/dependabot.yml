@@ -10,5 +10,17 @@ updates:
       time: "10:00"
       timezone: "America/Toronto"
     target-branch: 'main'
-    reviewers:
-      - anarian
+
+  # Keep the SHA-pinned GitHub Actions current (updates the SHA and the version comment)
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "10:00"
+      timezone: "America/Toronto"
+    target-branch: 'main'
+    groups:
+      github-actions:
+        patterns:
+          - "*"

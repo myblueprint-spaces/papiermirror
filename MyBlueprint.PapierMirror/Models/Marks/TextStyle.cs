@@ -82,7 +82,7 @@ public class TextStyle : Mark
             }
             else if (style.StartsWith(Background))
             {
-                attributes.FontSize = style[Background.Length..];
+                attributes.Background = style[Background.Length..];
             }
         }
 

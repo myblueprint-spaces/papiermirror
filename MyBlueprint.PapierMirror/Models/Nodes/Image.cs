@@ -116,12 +116,12 @@ public class Image : Node
 
         if (!string.IsNullOrEmpty(attrs.Alt))
         {
-            node.SetAttribute("src", attrs.Alt);
+            node.SetAttribute("alt", attrs.Alt);
         }
 
         if (!string.IsNullOrEmpty(attrs.Title))
         {
-            node.SetAttribute("src", attrs.Title);
+            node.SetAttribute("title", attrs.Title);
         }
 
         if (attrs.Width.HasValue)

@@ -1,0 +1,69 @@
+@* Renders a single mark around its content. Unknown marks render their content unwrapped. *@
+@if (Mark is not null && Opts.MarkComponents.TryGetValue(Mark.GetType(), out var component))
+{
+    <DynamicComponent Type="component" Parameters="@(new Dictionary<string, object?> { ["Mark"] = Mark, ["ChildContent"] = ChildContent })" />
+}
+else
+{
+    @switch (Mark)
+    {
+        case Strong:
+            <strong>@ChildContent</strong>
+            break;
+        case Emphasis:
+            <em>@ChildContent</em>
+            break;
+        case Code:
+            <code>@ChildContent</code>
+            break;
+        case Strike:
+            <s>@ChildContent</s>
+            break;
+        case Underline:
+            <u>@ChildContent</u>
+            break;
+        case Subscript:
+            <sub>@ChildContent</sub>
+            break;
+        case Superscript:
+            <sup>@ChildContent</sup>
+            break;
+        case Marked:
+            <mark>@ChildContent</mark>
+            break;
+        case Link link:
+            var linkAttrs = link.Attributes as LinkAttributes;
+            <a href="@Opts.UrlSanitizer(RenderHelpers.NullIfEmpty(linkAttrs?.Href))"
+               title="@RenderHelpers.NullIfEmpty(linkAttrs?.Title)"
+               target="@RenderHelpers.NullIfEmpty(linkAttrs?.Target)">@ChildContent</a>
+            break;
+        case TextStyle textStyle:
+            <span style="@RenderHelpers.TextStyleStyle(textStyle.Attributes as TextStyleAttributes, Opts)">@ChildContent</span>
+            break;
+        default:
+            @ChildContent
+            break;
+    }
+}
+
+@code {
+    /// <summary>
+    /// The mark to render.
+    /// </summary>
+    [Parameter, EditorRequired]
+    public Mark? Mark { get; set; }
+
+    /// <summary>
+    /// The content the mark applies to.
+    /// </summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    /// <summary>
+    /// Rendering options. Defaults to <see cref="PapierMirrorRenderOptions.Default"/>.
+    /// </summary>
+    [Parameter]
+    public PapierMirrorRenderOptions? Options { get; set; }
+
+    private PapierMirrorRenderOptions Opts => Options ?? PapierMirrorRenderOptions.Default;
+}

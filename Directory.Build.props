@@ -1,0 +1,22 @@
+<Project>
+  <!-- Shared NuGet package metadata. The release workflow sets Version from the release tag. -->
+  <PropertyGroup>
+    <Version>0.0.0-local</Version>
+    <Authors>myBlueprint</Authors>
+    <Company>myBlueprint Corp.</Company>
+    <Copyright>Copyright (C) myBlueprint Corp. and others</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/myblueprint-spaces/papiermirror</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/myblueprint-spaces/papiermirror</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>prosemirror;tiptap;rich-text;html;json</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <!-- GitHub Packages doesn't accept .snupkg symbol packages, so embed the PDB in the assembly. -->
+    <DebugType>embedded</DebugType>
+    <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">true</ContinuousIntegrationBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)README.md" Pack="true" PackagePath="\" Visible="false" />
+  </ItemGroup>
+</Project>
